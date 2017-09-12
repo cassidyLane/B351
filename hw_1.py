@@ -67,31 +67,46 @@ def randomBoard(board):
         randBoard = copy.deepcopy(makeMove(randBoard, nextPossMoves[nextMoveInt]))
     return randBoard
 
+# Determines whether the board is in the goal state.
 def testProcedure(currentNode):
     return currentNode[0] == makeGoalBoard(len(currentNode[0]))
 
-def outputProcedure(numruns, currentNode):
-    while (numruns >= 0 and currentNode is not None):
-        makeState(currentNode[0])
-        print()
+# Follows and prints the path of the solution.
+def outputProcedure(numRuns, currentNode):
+    step = 0
+    path = []
+    while (numRuns >= 0 and currentNode is not None):
+        path.append(currentNode[0])
+        step += 1
         currentNode = currentNode[1]
-        numruns -= 1
+        numRuns -= 1
+    while (step > 0):
+        makeState(path.pop())
+        print()
+        step -= 1
 
+# Expands current node to all possible moves that have
+# not already been explored.
+# Returns a list of all possible successor nodes.
 def expandProcedure(currentNode, queue, explored):
     possibleMoves = possMoves(currentNode[0])
     possibleMovesMade = []
     nqueue = copy.deepcopy(queue)
 
+    # Finds the possible moves from a state.
     for move in possibleMoves:
         possibleMovesMade.append(makeMove(currentNode[0], move))
+    # Finds possible states from the possible moves.
     for possibleMoveMade in possibleMovesMade:
         if (possibleMoveMade not in explored):
             nqueue.append(makeNode(possibleMoveMade, currentNode, currentNode[2] + 1, currentNode[3]))
     return nqueue
 
+# Creates a node for the board state.
 def makeNode(state, parent, depth, pathCost):
     return [state, parent, depth, pathCost]
 
+# Runs a BFS to find the solution to a given board.
 def generalSearch(queue, limit, numRuns):
     print(limit)
     node = queue[0]

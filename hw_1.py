@@ -121,6 +121,42 @@ def generalSearch(queue, limit, numRuns):
         node = queue[0]
         explored.append(node[0])
         generalSearch(expandProcedure(queue[0], queue[1:len(queue)], explored), limit, numRuns)
+        
+def distHeuristic(board):
+    d = 0
+    correctVal = 1
+    realVal = 0
+    for x in range(len(board)):
+        for y in range(len(board)):
+            if(board[x][y] == ""):
+                realVal = len(board) * len(board)
+            else:
+                realVal = board[x][y]
+            d += abs(correctVal-realVal)
+            correctVal += 1
+    return(int(3*d))
+
+def numOutOfOrderHeuristic(board):
+    outOfRow = 0
+    outOfCol = 0
+    flippedBoard = []
+    modelBoard = makeGoalBoard(len(board))
+    flippedModelBoard = []
+    for x in range(len(board)):
+        colAsRow = []
+        modColAsRow = []
+        for y in range(len(board)):
+            colAsRow.append(board[y][x])
+            modColAsRow.append(modelBoard[y][x])
+        flippedBoard.append(colAsRow)
+        flippedModelBoard.append(modColAsRow)
+    for x in range(len(board)):
+        for y in range(len(board[x])):
+            if(board[x][y] not in modelBoard[x]):
+                outOfRow += 1
+            if(flippedBoard[x][y] not in flippedModelBoard[x]):
+                outOfCol += 1
+    return(outOfRow + outOfCol)
 
 #p1 = makeGoalBoard(3)
 #makeState(p1)

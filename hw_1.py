@@ -1,6 +1,7 @@
 import random
 import copy
 import queue as Q
+import heapq
 import hashlib
 import time
 
@@ -123,7 +124,7 @@ def generalSearch(queue, limit, numRuns, goal):
     if queue == []:
         return False
     elif testProcedure(queue[0][0], goal):
-        print("OUTPUT")
+        print("OUTPUT:")
         outputProcedure(numRuns, queue[0])
     elif limit == 0:
         print("Limit reached")
@@ -249,6 +250,44 @@ def aStarSearch(queue, limit, numRuns, heuristic, goalBoard):
                 limit -= 1
                 numRuns += 1
 
+def aStarHeapSearch(queue, limit, numRuns, heuristic, goalBoard):
+    frontier = []
+
+    queue[0][3] = 0
+
+    heapq.heappush(frontier, (queue[0][3], queue[0]))
+
+    while(not not frontier):
+        current = heapq.heappop(frontier)
+        currentNode = current[1]
+        aStarExplored.append(currentNode)
+        cBoard = currentNode[0]
+        if(testProcedure(cBoard, goalBoard)):
+            outputProcedure(numRuns, currentNode)
+            return
+        elif(limit == 0):
+            print("Limit Reached")
+            return
+
+        successors = expandPQ(currentNode)
+
+        for successor in successors:
+            sGame = successor[0]
+            sCost = successor[3] + 1
+            if(not(inLoT(sGame, aStarExplored)) or (sCost < searchLot(sGame,aStarExplored)[3])):
+                oldSBoard = copy.deepcopy(sGame)
+                oldSParents = copy.deepcopy(successor[1])
+                oldSDepth = copy.deepcopy(successor[2])
+                if(inLoT(sGame, aStarExplored)):
+                   removeFromLot(sGame, aStarExplored)
+                   frontier.remove(successor)
+                   heapq.heapify(frontier)
+                newNode = makeNode(oldSBoard, oldSParents, oldSDepth, sCost)
+                priority = sCost + heuristic(sGame)
+                heapq.heappush(frontier, (priority, newNode))
+                limit -= 1
+                numRuns += 1
+#
 
 # Tests the uninformed search method.
 def testUninformedSearch(init, goal, limit):
@@ -259,14 +298,17 @@ def testUninformedSearch(init, goal, limit):
 # Takes a heuristic to determine which heuristic to use to calculate path cost
 def testInformedSearch(init, goal, limit, heuristic):
     initNode = makeNode(init, None, 0, heuristic(init))
-    #aStarSearch([initNode], limit, 0, goal, heuristic)
+    aStarHeapSearch([initNode], limit, 0, heuristic, goal)
 
 # Tests the functions created.
 start = randomBoard(makeGoalBoard(3))
 startNode = makeNode(start, None, 1, 0)
 
-startTime = time.time()
-testUninformedSearch(makeState(1,2,6,3,5,"",4,7,8), makeGoalBoard(3), 1000)
-end = time.time()
-print(end-startTime)
+#testUninformedSearch(randomBoard(makeGoalBoard(3)), makeGoalBoard(3), 1000)
+#testInformedSearch(makeState(1,2,3,7,4,5,"",8,6), makeGoalBoard(3), 1000, distHeuristic)
+
+#testUninformedSearch(makeState(1,2,6,3,5,"",4,7,8), makeGoalBoard(3), 1000)
+#testInformedSearch(makeState(1,2,6,3,5,"",4,7,8), makeGoalBoard(3), 1000, distHeuristic)
+#testInformedSearch(makeState(1,2,6,3,5,"",4,7,8), makeGoalBoard(3), 1000, numOutOfOrderHeuristic())
+
 

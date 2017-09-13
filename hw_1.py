@@ -108,9 +108,6 @@ def makeNode(state, parent, depth, pathCost):
 
 # Runs a BFS to find the solution to a given board.
 def generalSearch(queue, limit, numRuns):
-    print(limit)
-    node = queue[0]
-    makeState(node[0])
     if queue == []:
         return False
     elif testProcedure(queue[0]):
@@ -134,6 +131,6 @@ def generalSearch(queue, limit, numRuns):
 
 start = randomBoard(makeGoalBoard(3))
 startNode = makeNode(start, None, 1, 0)
-generalSearch([startNode], 100, 0)
+generalSearch([startNode], 1000, 0)
 
 

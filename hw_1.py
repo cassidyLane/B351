@@ -3,6 +3,13 @@ import copy
 
 board = []
 explored = []
+# Creates a state board based on given elements.
+# Used for testing purposes.
+def makeState(nw, n, ne, w, c, e, sw, s, se):
+    row1 = [nw, n, ne]
+    row2 = [w, c, e]
+    row3 = [sw, s, se]
+    return [row1, row2, row3]
 
 # Creates a goal board based on a given size
 # Takes an int called size
@@ -22,7 +29,7 @@ def makeGoalBoard(size):
     return(nBoard)
 
 #Prints a puzzle
-def makeState(board):
+def printState(board):
     for row in board:
         print(row)
 
@@ -68,8 +75,8 @@ def randomBoard(board):
     return randBoard
 
 # Determines whether the board is in the goal state.
-def testProcedure(currentNode):
-    return currentNode[0] == makeGoalBoard(len(currentNode[0]))
+def testProcedure(currentState, goalState):
+    return currentState == goalState
 
 # Follows and prints the path of the solution.
 def outputProcedure(numRuns, currentNode):
@@ -81,7 +88,7 @@ def outputProcedure(numRuns, currentNode):
         currentNode = currentNode[1]
         numRuns -= 1
     while (step > 0):
-        makeState(path.pop())
+        printState(path.pop())
         print()
         step -= 1
 
@@ -107,10 +114,10 @@ def makeNode(state, parent, depth, pathCost):
     return [state, parent, depth, pathCost]
 
 # Runs a BFS to find the solution to a given board.
-def generalSearch(queue, limit, numRuns):
+def generalSearch(queue, limit, numRuns, goal):
     if queue == []:
         return False
-    elif testProcedure(queue[0]):
+    elif testProcedure(queue[0][0], goal):
         print("OUTPUT")
         outputProcedure(numRuns, queue[0])
     elif limit == 0:
@@ -120,8 +127,11 @@ def generalSearch(queue, limit, numRuns):
         numRuns += 1
         node = queue[0]
         explored.append(node[0])
-        generalSearch(expandProcedure(queue[0], queue[1:len(queue)], explored), limit, numRuns)
-        
+        generalSearch(expandProcedure(queue[0], queue[1:len(queue)], explored), limit, numRuns, goal)
+
+def testUninformedSearch(init, goal, limit):
+    generalSearch([init], limit, 0, goal)
+
 def distHeuristic(board):
     d = 0
     correctVal = 1
@@ -167,6 +177,10 @@ def numOutOfOrderHeuristic(board):
 
 start = randomBoard(makeGoalBoard(3))
 startNode = makeNode(start, None, 1, 0)
-generalSearch([startNode], 1000, 0)
+generalSearch([startNode], 1000, 0, makeGoalBoard(3))
+
+testUninformedSearch(make)
+
+
 
 

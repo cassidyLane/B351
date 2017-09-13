@@ -1,10 +1,12 @@
 import random
 import copy
+import queue as Q
+import hashlib
 import time
 
 board = []
 explored = []
-
+aStarExplored = []
 
 # Creates a node for the board state.
 def makeNode(state, parent, depth, pathCost):
@@ -94,7 +96,6 @@ def outputProcedure(numRuns, currentNode):
         step += 1
         currentNode = currentNode[1]
         numRuns -= 1
-        print(step-1)
     while (step > 0):
         printState(path.pop())
         print()
@@ -168,6 +169,86 @@ def numOutOfOrderHeuristic(board):
             if(flippedBoard[x][y] not in flippedModelBoard[x]):
                 outOfCol += 1
     return(outOfRow + outOfCol)
+
+def inLoT(board, lot):
+    for t in lot:
+        if(t[0] == board):
+            return True
+        else:
+            return False
+
+def searchLot(board, lot):
+    for t in lot:
+        if(t[0] == board):
+            return t
+
+def removeFromLoT(board, lot):
+    for t in lot:
+        if(t[0] == board):
+            lot.remove(board)
+            return
+
+def expandPQ(node):
+    possibleMoves = possMoves(node[0])
+    possibleMovesMade = []
+    for move in possibleMoves:
+        possibleMovesMade.append(makeMove(node[0], move))
+    possNodes = []
+    for move in possibleMovesMade:
+        possNodes.append(makeNode(move, node, node[2]+1, node[3]))
+    return(possNodes)
+
+def hashNode(node):
+    hash = ""
+    board = node[0]
+    for b in board:
+        hash += str(b)
+    parent = node[1]
+    hash += str(parent)
+    depth = node[2]
+    hash += str(depth)
+    cost = node[3]
+    hash += str(cost)
+    return(hash)
+
+def aStarSearch(queue, limit, numRuns, heuristic, goalBoard):
+    frontier = Q.PriorityQueue();
+
+    queue[0][3] = 0
+
+    frontier.put((float('inf'), str(queue[0][0]), queue[0]))
+    frontier.heapify()
+
+    while(not(frontier.empty())):
+        current = frontier.get()
+        aStarExplored.append(current[2])
+
+        cBoard = current[2][0]
+        if(testProcedure(cBoard, goalBoard)):
+            outputProcedure(numRuns, current[2])
+            return
+        elif(limit == 0):
+            print("LIMIT REACHED")
+            return
+
+        successors = expandPQ(current[2])
+
+        for successor in successors:
+            frontierList = list(frontier.queue)
+            sGame = successor[0]
+            sCost = successor[3] + 1
+            if(not(inLoT(sGame, aStarExplored)) or (sCost < searchLot(sGame,aStarExplored)[3])):
+                oldSBoard = copy.deepcopy(sGame)
+                oldSParents = copy.deepcopy(successor[1])
+                oldSDepth = copy.deepcopy(successor[2])
+                if(inLoT(sGame, aStarExplored)):
+                    removeFromLot(sGame, aStarExplored)
+                newNode = makeNode(oldSBoard, oldSParents, oldSDepth, sCost)
+                priority = sCost + heuristic(sGame)
+                frontier.put((int(priority), hashNode(successor), successor))
+                limit -= 1
+                numRuns += 1
+
 
 # Tests the uninformed search method.
 def testUninformedSearch(init, goal, limit):

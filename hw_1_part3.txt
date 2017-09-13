@@ -1,0 +1,16 @@
+Part 3 Answers:
+
+1. We believe the most informative information to provide to the algorithm is distance from the current board to the
+goal board and the number of elements not in order. By choosing a move that will decrease these, the search algorithm
+will be able to choose optimal moves, discounting ones that are less effective.
+
+2. Problem difficulty in this domain corresponds to the number of moves the board has to go through to reach the goal
+state. If the board has to go to more boards then it needs to expand more children boards, expanding the frontier and
+number of nodes that have to then be searched.
+
+3. The experimental setup consisted of feeding the testing functions boards with a given amount of steps in the path to
+the goal: 1 - 10. We then recorded the execution times to determine differences between uninformed and informed
+search algorithms. A* improved both speed and maximum difficulty of problems in most cases. It improved on speed because
+it explored the best option depending on cost of the move, determined through heuristics. It improved on maximum
+difficulty because it is able to compute on paths greater than the general search could. This is because it again employs
+heuristics to help it solve, and reduce the amount of steps taken in the path.

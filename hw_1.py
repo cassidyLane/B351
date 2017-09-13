@@ -1,5 +1,6 @@
 import random
 import copy
+import time
 
 board = []
 explored = []
@@ -93,6 +94,7 @@ def outputProcedure(numRuns, currentNode):
         step += 1
         currentNode = currentNode[1]
         numRuns -= 1
+        print(step-1)
     while (step > 0):
         printState(path.pop())
         print()
@@ -182,4 +184,8 @@ def testInformedSearch(init, goal, limit, heuristic):
 start = randomBoard(makeGoalBoard(3))
 startNode = makeNode(start, None, 1, 0)
 
+startTime = time.time()
+testUninformedSearch(makeState(1,2,6,3,5,"",4,7,8), makeGoalBoard(3), 1000)
+end = time.time()
+print(end-startTime)
 

@@ -3,6 +3,12 @@ import copy
 
 board = []
 explored = []
+
+
+# Creates a node for the board state.
+def makeNode(state, parent, depth, pathCost):
+    return [state, parent, depth, pathCost]
+
 # Creates a state board based on given elements.
 # Used for testing purposes.
 def makeState(nw, n, ne, w, c, e, sw, s, se):
@@ -109,10 +115,6 @@ def expandProcedure(currentNode, queue, explored):
             nqueue.append(makeNode(possibleMoveMade, currentNode, currentNode[2] + 1, currentNode[3]))
     return nqueue
 
-# Creates a node for the board state.
-def makeNode(state, parent, depth, pathCost):
-    return [state, parent, depth, pathCost]
-
 # Runs a BFS to find the solution to a given board.
 def generalSearch(queue, limit, numRuns, goal):
     if queue == []:
@@ -128,9 +130,6 @@ def generalSearch(queue, limit, numRuns, goal):
         node = queue[0]
         explored.append(node[0])
         generalSearch(expandProcedure(queue[0], queue[1:len(queue)], explored), limit, numRuns, goal)
-
-def testUninformedSearch(init, goal, limit):
-    generalSearch([init], limit, 0, goal)
 
 def distHeuristic(board):
     d = 0
@@ -168,19 +167,19 @@ def numOutOfOrderHeuristic(board):
                 outOfCol += 1
     return(outOfRow + outOfCol)
 
-#p1 = makeGoalBoard(3)
-#makeState(p1)
-#print()
-#randomBoard(p1)
-#makeState(p1)
-#print()
+# Tests the uninformed search method.
+def testUninformedSearch(init, goal, limit):
+    initNode = makeNode(init, None, 0, 0)
+    generalSearch([initNode], limit, 0, goal)
 
+# Tests the informed search method.
+# Takes a heuristic to determine which heuristic to use to calculate path cost
+def testInformedSearch(init, goal, limit, heuristic):
+    initNode = makeNode(init, None, 0, heuristic(init))
+    #aStarSearch([initNode], limit, 0, goal, heuristic)
+
+# Tests the functions created.
 start = randomBoard(makeGoalBoard(3))
 startNode = makeNode(start, None, 1, 0)
-generalSearch([startNode], 1000, 0, makeGoalBoard(3))
-
-testUninformedSearch(make)
-
-
 
 

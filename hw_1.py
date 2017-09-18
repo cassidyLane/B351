@@ -173,12 +173,10 @@ def numOutOfOrderHeuristic(board):
 
 def inLoT(board, lot):
     for t in lot:
-        if(t[0] == board):
-            return True
-        else:
-            return False
+        return t[0] == board
 
-def searchLot(board, lot):
+
+def searchLoT(board, lot, pathCost):
     for t in lot:
         if(t[0] == board):
             return t
@@ -196,7 +194,7 @@ def expandPQ(node):
         possibleMovesMade.append(makeMove(node[0], move))
     possNodes = []
     for move in possibleMovesMade:
-        possNodes.append(makeNode(move, node, node[2]+1, node[3]))
+        possNodes.append(makeNode(move, node, node[2]+1, node[3]+1))
     return(possNodes)
 
 def hashNode(node):
@@ -243,7 +241,7 @@ def aStarSearch(queue, limit, numRuns, heuristic, goalBoard):
                 oldSParents = copy.deepcopy(successor[1])
                 oldSDepth = copy.deepcopy(successor[2])
                 if(inLoT(sGame, aStarExplored)):
-                    removeFromLot(sGame, aStarExplored)
+                    removeFromLoT(sGame, aStarExplored)
                 newNode = makeNode(oldSBoard, oldSParents, oldSDepth, sCost)
                 priority = sCost + heuristic(sGame)
                 frontier.put((int(priority), hashNode(successor), successor))
@@ -252,17 +250,20 @@ def aStarSearch(queue, limit, numRuns, heuristic, goalBoard):
 
 def aStarHeapSearch(queue, limit, numRuns, heuristic, goalBoard):
     frontier = []
+    frontierDictionary = {}
 
-    queue[0][3] = 0
+    queue[0][3] = 0 # Set path cost of first node to 0.
 
     heapq.heappush(frontier, (queue[0][3], queue[0]))
+    frontierDictionary[queue[0][0]] = queue[0][3]
 
-    while(not not frontier):
+    while frontier:
         current = heapq.heappop(frontier)
         currentNode = current[1]
         aStarExplored.append(currentNode)
         cBoard = currentNode[0]
         if(testProcedure(cBoard, goalBoard)):
+            print("OUTPUT:")
             outputProcedure(numRuns, currentNode)
             return
         elif(limit == 0):
@@ -272,22 +273,31 @@ def aStarHeapSearch(queue, limit, numRuns, heuristic, goalBoard):
         successors = expandPQ(currentNode)
 
         for successor in successors:
-            sGame = successor[0]
-            sCost = successor[3] + 1
-            if(not(inLoT(sGame, aStarExplored)) or (sCost < searchLot(sGame,aStarExplored)[3])):
-                oldSBoard = copy.deepcopy(sGame)
-                oldSParents = copy.deepcopy(successor[1])
-                oldSDepth = copy.deepcopy(successor[2])
-                if(inLoT(sGame, aStarExplored)):
-                   removeFromLot(sGame, aStarExplored)
-                   frontier.remove(successor)
-                   heapq.heapify(frontier)
-                newNode = makeNode(oldSBoard, oldSParents, oldSDepth, sCost)
-                priority = sCost + heuristic(sGame)
-                heapq.heappush(frontier, (priority, newNode))
+            successorBoard = successor[0]
+            successorCost = successor[3]
+            priority = successorCost + heuristic(successorBoard)
+
+            if frontierDictionary[successor[0]]:
+                stolenPriority = frontierDictionary[successor[0]]
+                if priority < stolenPriority:
+                    frontier.remove(successor)
+                    heapq.heapify(frontier)
+                    heapq.heappush(frontier, (priority, successor))
+                    frontierDictionary.update(successor[0],priority)
+                else:
+                    frontierDictionary[successor[0]] = priority
+            if (inLoT(successorBoard, aStarExplored)):
+                exploredNode = searchLoT(successorBoard, aStarExplored)
+                if priority < exploredNode[3]:
+                    aStarExplored.remove(exploredNode)
+                    heapq.heappush(frontier, (priority, successor))
+
+            else:
+                heapq.heappush(frontier, (priority, successor))
+                frontierDict[successor] = priority
                 limit -= 1
                 numRuns += 1
-#
+
 
 # Tests the uninformed search method.
 def testUninformedSearch(init, goal, limit):
@@ -305,7 +315,7 @@ start = randomBoard(makeGoalBoard(3))
 startNode = makeNode(start, None, 1, 0)
 
 #testUninformedSearch(randomBoard(makeGoalBoard(3)), makeGoalBoard(3), 1000)
-#testInformedSearch(makeState(1,2,3,7,4,5,"",8,6), makeGoalBoard(3), 1000, distHeuristic)
+testInformedSearch(makeState(1,2,3,4,5,"",7,8,6), makeGoalBoard(3), 1000, distHeuristic)
 
 #testUninformedSearch(makeState(1,2,6,3,5,"",4,7,8), makeGoalBoard(3), 1000)
 #testInformedSearch(makeState(1,2,6,3,5,"",4,7,8), makeGoalBoard(3), 1000, distHeuristic)

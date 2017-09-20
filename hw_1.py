@@ -1,16 +1,26 @@
+<<<<<<< HEAD
+# Cassidy Wichowsky & Renee Bialas
+# cwichows               rbialas
+
+import random
+import copy
+=======
 #Cassidy Wichowsky & Renee Bialas
 #cwichows               rbialas
 
 import random
 import copy
 
+>>>>>>> 19ef1a4d5c4a9b5cc06aacf2b184352c1d579c6f
 
 board = []
 explored = []
 
+
 # Creates a node for the board state.
 def makeNode(state, parent, depth, pathCost):
     return [state, parent, depth, pathCost]
+
 
 # Creates a state board based on given elements.
 # Used for testing purposes.
@@ -19,6 +29,7 @@ def makeState(nw, n, ne, w, c, e, sw, s, se):
     row2 = [w, c, e]
     row3 = [sw, s, se]
     return [row1, row2, row3]
+
 
 # Creates a goal board based on a given size
 # Takes an int called size
@@ -29,48 +40,52 @@ def makeGoalBoard(size):
     for x in range(size):
         nRow = []
         for y in range(size):
-            if(num != size*size):
+            if (num != size * size):
                 nRow.append(num)
                 num += 1
             else:
                 nRow.append("")
         nBoard.append(nRow)
-    return(nBoard)
+    return (nBoard)
+
 
 # Prints a puzzle.
 def printState(board):
     for row in board:
         print(row)
 
+
 # Takes a puzzle and move in the form (newSpaceRow, newSpaceCol, oldSpaceRow, oldSpaceCol)
 # Returns a board with the given move made
 def makeMove(board, move):
-     newBoard = copy.deepcopy(board)
-     newBoard[move[0]][move[1]] = "";
-     newBoard[move[2]][move[3]] = board[move[0]][move[1]]
-     return(newBoard)
+    newBoard = copy.deepcopy(board)
+    newBoard[move[0]][move[1]] = "";
+    newBoard[move[2]][move[3]] = board[move[0]][move[1]]
+    return (newBoard)
+
 
 # Generates all possible moves given a board.
 # Returns a list of moves.
 # A move is a tuple of the shape (newSpaceRow, newSpaceCol, oldSpaceRow, oldSpaceCol)
 def possMoves(board):
-     for x in range(len(board)):
-         if "" in board[x]:
+    for x in range(len(board)):
+        if "" in board[x]:
             size = len(board);
             oldSpaceRow = x;
             spaceIndCol = board[x].index("")
             oldSpaceCol = spaceIndCol
             newPossInds = []
-            if(oldSpaceRow - 1 >= 0):
-                newPossInds.append((oldSpaceRow-1, oldSpaceCol, oldSpaceRow, oldSpaceCol))
-            if(oldSpaceRow + 1 < size):
-                newPossInds.append((oldSpaceRow+1, oldSpaceCol, oldSpaceRow, oldSpaceCol))
-            if(oldSpaceCol - 1 >= 0):
+            if (oldSpaceRow - 1 >= 0):
+                newPossInds.append((oldSpaceRow - 1, oldSpaceCol, oldSpaceRow, oldSpaceCol))
+            if (oldSpaceRow + 1 < size):
+                newPossInds.append((oldSpaceRow + 1, oldSpaceCol, oldSpaceRow, oldSpaceCol))
+            if (oldSpaceCol - 1 >= 0):
                 newPossInds.append((oldSpaceRow, oldSpaceCol - 1, oldSpaceRow, oldSpaceCol))
-            if(oldSpaceCol + 1 < size):
+            if (oldSpaceCol + 1 < size):
                 newPossInds.append((oldSpaceRow, oldSpaceCol + 1, oldSpaceRow, oldSpaceCol))
-            return(newPossInds)
+            return (newPossInds)
             break
+
 
 # Randomizes a puzzle from whatever state it's already in.
 def randomBoard(board):
@@ -82,9 +97,11 @@ def randomBoard(board):
         randBoard = copy.deepcopy(makeMove(randBoard, nextPossMoves[nextMoveInt]))
     return randBoard
 
+
 # Determines whether the board is in the goal state.
 def testProcedure(currentState, goalState):
     return currentState == goalState
+
 
 # Follows and prints the path of the solution.
 def outputProcedure(numRuns, currentNode):
@@ -99,6 +116,7 @@ def outputProcedure(numRuns, currentNode):
         printState(path.pop())
         print()
         step -= 1
+
 
 # Expands current node to all possible moves that have
 # not already been explored.
@@ -116,6 +134,7 @@ def expandProcedure(currentNode, queue, explored):
         if (possibleMoveMade not in explored):
             nqueue.append(makeNode(possibleMoveMade, currentNode, currentNode[2] + 1, currentNode[3] + 1))
     return nqueue
+
 
 # Runs a BFS to find the solution to a given board.
 def generalSearch(queue, limit, numRuns, goal):
@@ -135,6 +154,7 @@ def generalSearch(queue, limit, numRuns, goal):
         explored.append(node[0])
         generalSearch(expandProcedure(queue[0], queue[1:len(queue)], explored), limit, numRuns, goal)
 
+
 # Calculates the Manhattan distance as a cost for each tile.
 def numOutOfOrder(board, goalBoard):
     count = 0
@@ -153,7 +173,7 @@ def aStarHeapSearch(queue, limit, numRuns, heuristic, goalBoard):
     gameList = []
     priorityList = []
     nodeList = []
-   
+
     queue[0][3] = 0 # Set path cost of first node to 0.
 
     heapq.heappush(frontier, (0, queue[0]))
@@ -161,9 +181,9 @@ def aStarHeapSearch(queue, limit, numRuns, heuristic, goalBoard):
     gameList.append(queue[0][0])
     priorityList.append(0)
     nodeList.append(queue[0])
-    
-    
-    
+
+
+
     while frontier:
         current = heapq.heappop(frontier)
         currentNode = current[1]
@@ -190,7 +210,7 @@ def aStarHeapSearch(queue, limit, numRuns, heuristic, goalBoard):
             successorBoard = successor[0]
             successorCost = successor[3]
             priority = successorCost + heuristic(successorBoard)
-            
+
             inGameList = False
             inExplored = False
 
@@ -235,6 +255,7 @@ def aStarHeapSearch(queue, limit, numRuns, heuristic, goalBoard):
                 numRuns += 1
 '''
 
+
 # Returns the lowest priority node from frontier.
 def getLowestPrior(frontier):
     lowestPrior = frontier[0][0]
@@ -247,6 +268,7 @@ def getLowestPrior(frontier):
 
     return lowestNode
 
+
 # Calculates how far each tile is from its goal state, and sums those distances.
 def heuristic(matrix, goal):
     sum = 0
@@ -256,8 +278,9 @@ def heuristic(matrix, goal):
             for k in range(0, len(matrix)):
                 for l in range(0, len(matrix)):
                     if matrix[k][l] == tile:
-                        sum += (k - i)*(k - i)+(j - l)*(j - l)
-    return(sum)
+                        sum += (k - i) * (k - i) + (j - l) * (j - l)
+    return (sum)
+
 
 # Implements A* search using a list.
 # Solves a 8 Tile Sliding puzzle with heuristics.
@@ -286,11 +309,10 @@ def easyAStar(queue, limit, numRuns, heuristic, goalBoard):
             addedNode = True
 
             for x in range(len(frontier)):
-                if(frontier[x][1][0] == successor[0]):
+                if (frontier[x][1][0] == successor[0]):
                     addedNode = False
-                    if(priority < frontier[x][0]):
+                    if (priority < frontier[x][0]):
                         addedNode = True
-
 
             for x in range(len(exploredNodes)):
                 if exploredNodes[x][1][0] == successor[0]:
@@ -310,19 +332,36 @@ def testUninformedSearch(init, goal, limit):
     initNode = makeNode(init, None, 0, 0)
     generalSearch([initNode], limit, 0, goal)
 
+
 # Tests the informed search method.
 # Takes a heuristic to determine which heuristic to use to calculate path cost
 def testInformedSearch(init, goal, limit, heuristic):
     initNode = makeNode(init, None, 0, 0)
     easyAStar([initNode], limit, 0, heuristic, goal)
 
+
 # Tests the functions created.
 start = randomBoard(makeGoalBoard(3))
 startNode = makeNode(start, None, 1, 0)
 
-#testUninformedSearch(randomBoard(makeGoalBoard(3)), makeGoalBoard(3), 1000)
+# testUninformedSearch(randomBoard(makeGoalBoard(3)), makeGoalBoard(3), 1000)
 
 print("Uninformed")
+<<<<<<< HEAD
+# Completes 2 moves.
+testUninformedSearch(makeState(1, 2, 3, 4, "", 5, 7, 8, 6), makeGoalBoard(3), 1000)
+print()
+# Completes 4 moves.
+testUninformedSearch(makeState(1, 2, 3, 7, 4, 5, "", 8, 6), makeGoalBoard(3), 1000)
+print()
+# Completes 5 moves.
+testUninformedSearch(makeState(1, 2, 3, 4, 8, "", 7, 6, 5), makeGoalBoard(3), 1000)
+print()
+# Completes 8 moves.
+testUninformedSearch(makeState(4, 1, 3, 7, 2, 6, 5, 8, ""), makeGoalBoard(3), 1000)
+print()
+# Completes 9 moves.
+=======
 # Completes 2 moves.                                                                                                                                                                 
 testUninformedSearch(makeState(1, 2, 3, 4, "", 5, 7, 8, 6), makeGoalBoard(3), 1000)
 print()
@@ -336,10 +375,31 @@ print()
 testUninformedSearch(makeState(4, 1, 3, 7, 2, 6, 5, 8, ""), makeGoalBoard(3), 1000)
 print()
 # Completes 9 moves.                                                                                                                                                                 
+>>>>>>> 19ef1a4d5c4a9b5cc06aacf2b184352c1d579c6f
 testUninformedSearch(makeState(1, 6, 2, 5, 3, "", 4, 7, 8), makeGoalBoard(3), 1000)
 print()
 
 print("Informed")
+<<<<<<< HEAD
+# Completes 2 moves.
+testInformedSearch(makeState(1, 2, 3, 4, "", 5, 7, 8, 6), makeGoalBoard(3), 1000, heuristic)
+print()
+# Completes 4 moves.
+testInformedSearch(makeState(1, 2, 3, 7, 4, 5, "", 8, 6), makeGoalBoard(3), 1000, heuristic)
+print()
+# Completes 5 moves.
+testInformedSearch(makeState(1, 2, 3, 4, 8, "", 7, 6, 5), makeGoalBoard(3), 1000, heuristic)
+print()
+# Completes 8 moves.
+testInformedSearch(makeState(4, 1, 3, 7, 2, 6, 5, 8, ""), makeGoalBoard(3), 1000, heuristic)
+print()
+# Completes 9 moves.
+testInformedSearch(makeState(1, 6, 2, 5, 3, "", 4, 7, 8), makeGoalBoard(3), 1000, heuristic)
+print()
+# Completes 11 moves.
+testInformedSearch(makeState(5, 1, 2, 6, 3, "", 4, 7, 8), makeGoalBoard(3), 1000, heuristic)
+print()
+=======
 # Completes 2 moves.                                                                                                                                                                 
 testInformedSearch(makeState(1, 2, 3, 4, "", 5, 7, 8, 6), makeGoalBoard(3), 1000, heuristic)
 print()
@@ -358,3 +418,4 @@ print()
 # Completes 11 moves.                                                                                                                                                                
 testInformedSearch(makeState(5, 1, 2, 6, 3, "", 4, 7, 8), makeGoalBoard(3), 1000, heuristic)
 print()
+>>>>>>> 19ef1a4d5c4a9b5cc06aacf2b184352c1d579c6f

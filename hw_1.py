@@ -1,5 +1,6 @@
 import random
 import copy
+import time
 
 board = []
 explored = []
@@ -33,12 +34,11 @@ def makeGoalBoard(size):
         nBoard.append(nRow)
     return(nBoard)
 
-#Prints a puzzle
+# Prints a puzzle.
 def printState(board):
     for row in board:
         print(row)
 
-# returns a board after a move is made
 # Takes a puzzle and move in the form (newSpaceRow, newSpaceCol, oldSpaceRow, oldSpaceCol)
 # Returns a board with the given move made
 def makeMove(board, move):
@@ -47,8 +47,8 @@ def makeMove(board, move):
      newBoard[move[2]][move[3]] = board[move[0]][move[1]]
      return(newBoard)
 
-# generates all possible moves given a board
-# Returns a list of moves
+# Generates all possible moves given a board.
+# Returns a list of moves.
 # A move is a tuple of the shape (newSpaceRow, newSpaceCol, oldSpaceRow, oldSpaceCol)
 def possMoves(board):
      for x in range(len(board)):
@@ -69,7 +69,7 @@ def possMoves(board):
             return(newPossInds)
             break
 
-# Randomizes a puzzle from whatever state it's already in
+# Randomizes a puzzle from whatever state it's already in.
 def randomBoard(board):
     randBoard = copy.deepcopy(board)
     numMoves = random.randrange(0, 19)
@@ -130,6 +130,7 @@ def generalSearch(queue, limit, numRuns, goal):
         explored.append(node[0])
         generalSearch(expandProcedure(queue[0], queue[1:len(queue)], explored), limit, numRuns, goal)
 
+# Calculates the Manhattan distance as a cost for each tile.
 def distHeuristic(board):
     d = 0
     correctVal = 1
@@ -147,6 +148,7 @@ def distHeuristic(board):
 
 
 '''
+# Attempt at A* search with a heap.
 def aStarHeapSearch(queue, limit, numRuns, heuristic, goalBoard):
     frontier = []
     #frontierDictionary = {}
@@ -235,6 +237,7 @@ def aStarHeapSearch(queue, limit, numRuns, heuristic, goalBoard):
                 numRuns += 1
 '''
 
+# Returns the lowest priority node from frontier.
 def getLowestPrior(frontier):
     lowestPrior = frontier[0][0]
     lowestNode = frontier[0]
@@ -246,7 +249,7 @@ def getLowestPrior(frontier):
 
     return lowestNode
 
-# Calculates how far each tile is from its goal state, and sums those distances
+# Calculates how far each tile is from its goal state, and sums those distances.
 def heuristic(matrix, goal):
     sum = 0
     for i in range(0, len(goal)):
@@ -258,50 +261,50 @@ def heuristic(matrix, goal):
                         sum += (k - i)*(k - i)+(j - l)*(j - l)
     return(sum)
 
-
+# Implements A* search using a list.
+# Solves a 8 Tile Sliding puzzle with heuristics.
 def easyAStar(queue, limit, numRuns, heuristic, goalBoard):
     frontier = []
-    exp = []
+    exploredNodes = []
 
     frontier.append((0, queue[0]))
 
     while (len(frontier) > 0):
-        current = getLowestPrior(frontier)
-        frontier.remove(current)
-        currentBoard = current[1][0]
-        successors = expandProcedure(current[1], [], exp)
+        currentNode = getLowestPrior(frontier)
+        frontier.remove(currentNode)
+        successors = expandProcedure(currentNode[1], [], exploredNodes)
 
         for successor in successors:
             numRuns += 1
             limit -= 1
 
-            if(testProcedure(successor[0], goalBoard)):
-                print("OUTPUT")
+            if testProcedure(successor[0], goalBoard):
+                print("OUTPUT: ")
                 outputProcedure(numRuns, successor)
                 return
-            elif(limit == 0):
+            elif limit == 0:
                 print("LIMIT REACHED")
                 return
             priority = successor[3] + heuristic(successor[0], goalBoard)
 
-            addNode = True
+            addedNode = True
 
             for x in range(len(frontier)):
                 if(frontier[x][1][0] == successor[0]):
-                    addNode = False
+                    addedNode = False
                     if(priority < frontier[x][0]):
-                        addNode = True
+                        addedNode = True
 
 
-            for x in range(len(exp)):
-                if(exp[x][1][0] == successor[0]):
-                    addNode = (False or addNode)
-                    if(priority < exp[x][0]):
-                        addNode = True
+            for x in range(len(exploredNodes)):
+                if exploredNodes[x][1][0] == successor[0]:
+                    addedNode = (False or addedNode)
+                    if priority < exploredNodes[x][0]:
+                        addedNode = True
 
-            if(addNode):
+            if addedNode:
                 frontier.append((priority, successor))
-        exp.append(current)
+        exploredNodes.append(currentNode)
 
 
 # Tests the uninformed search method.
@@ -320,13 +323,20 @@ start = randomBoard(makeGoalBoard(3))
 startNode = makeNode(start, None, 1, 0)
 
 #testUninformedSearch(randomBoard(makeGoalBoard(3)), makeGoalBoard(3), 1000)
-#testInformedSearch(makeState(1,2,3,4,5,"",7,8,6), makeGoalBoard(3), 1000, heuristic)
 
-#testUninformedSearch(makeState(1,2,6,3,5,"",4,7,8), makeGoalBoard(3), 1000)
-#testInformedSearch(makeState(1,2,6,3,5,"",4,7,8), makeGoalBoard(3), 1000, heuristic)
-#testInformedSearch(makeState(1,2,6,3,5,"",4,7,8), makeGoalBoard(3), 1000, heuristic)
-#testInformedSearch(makeState(5,1,2,6,3,"",4,7,8), makeGoalBoard(3), 1000, heuristic)
-testInformedSearch(makeState(3,5,6,1,4,8,"",7,2), makeGoalBoard(3), 1000, heuristic)
-#testInformedSearch(makeState(8,7,6,5,4,3,2,1,""), makeGoalBoard(3), 1000, heuristic)
+# Completes 2 moves.
+testInformedSearch(makeState(1, 2, 3, 4, "", 5, 7, 8, 6), makeGoalBoard(3), 1000, heuristic)
+# Completes 4 moves.
+testInformedSearch(makeState(1, 2, 3, 7, 4, 5, "", 8, 6), makeGoalBoard(3), 1000, heuristic)
+# Completes 5 moves.
+testInformedSearch(makeState(1, 2, 3, 4, 8, "", 7, 6, 5), makeGoalBoard(3), 1000, heuristic)
+# Completes 8 moves.
+testInformedSearch(makeState(4, 1, 3, 7, 2, 6, 5, 8, ""), makeGoalBoard(3), 1000, heuristic)
+# Completes 9 moves.
+testInformedSearch(makeState(1, 6, 2, 5, 3, "", 4, 7, 8), makeGoalBoard(3), 1000, heuristic)
+# Completes 11 moves.
+testInformedSearch(makeState(5, 1, 2, 6, 3, "", 4, 7, 8), makeGoalBoard(3), 1000, heuristic)
+# Completes 13 moves.
+testInformedSearch(makeState(4,3,6,8,7,1,"",5,2), makeGoalBoard(3), 1000, heuristic)
 
 

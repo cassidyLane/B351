@@ -1,6 +1,9 @@
+#Cassidy Wichowsky & Renee Bialas
+#cwichows               rbialas
+
 import random
 import copy
-import time
+
 
 board = []
 explored = []
@@ -121,8 +124,10 @@ def generalSearch(queue, limit, numRuns, goal):
     elif testProcedure(queue[0][0], goal):
         print("OUTPUT:")
         outputProcedure(numRuns, queue[0])
+        del explored[:]
     elif limit == 0:
         print("Limit reached")
+        del explored[:]
     else:
         limit -= 1
         numRuns += 1
@@ -317,43 +322,39 @@ startNode = makeNode(start, None, 1, 0)
 
 #testUninformedSearch(randomBoard(makeGoalBoard(3)), makeGoalBoard(3), 1000)
 
-# Completes 2 moves.
-startTime = time.time()
+print("Uninformed")
+# Completes 2 moves.                                                                                                                                                                 
+testUninformedSearch(makeState(1, 2, 3, 4, "", 5, 7, 8, 6), makeGoalBoard(3), 1000)
+print()
+# Completes 4 moves.                                                                                                                                                                 
+testUninformedSearch(makeState(1, 2, 3, 7, 4, 5, "", 8, 6), makeGoalBoard(3), 1000)
+print()
+# Completes 5 moves.                                                                                                                                                                 
+testUninformedSearch(makeState(1, 2, 3, 4, 8, "", 7, 6, 5), makeGoalBoard(3), 1000)
+print()
+# Completes 8 moves.                                                                                                                                                                 
+testUninformedSearch(makeState(4, 1, 3, 7, 2, 6, 5, 8, ""), makeGoalBoard(3), 1000)
+print()
+# Completes 9 moves.                                                                                                                                                                 
+testUninformedSearch(makeState(1, 6, 2, 5, 3, "", 4, 7, 8), makeGoalBoard(3), 1000)
+print()
+
+print("Informed")
+# Completes 2 moves.                                                                                                                                                                 
 testInformedSearch(makeState(1, 2, 3, 4, "", 5, 7, 8, 6), makeGoalBoard(3), 1000, heuristic)
-endTime = time.time()
-print(endTime-startTime)
-# Completes 4 moves.
-startTime = time.time()
+print()
+# Completes 4 moves.                                                                                                                                                                 
 testInformedSearch(makeState(1, 2, 3, 7, 4, 5, "", 8, 6), makeGoalBoard(3), 1000, heuristic)
-endTime = time.time()
-print(endTime-startTime)
-# Completes 5 moves.
-startTime = time.time()
+print()
+# Completes 5 moves.                                                                                                                                                                 
 testInformedSearch(makeState(1, 2, 3, 4, 8, "", 7, 6, 5), makeGoalBoard(3), 1000, heuristic)
-endTime = time.time()
-print(endTime-startTime)
-# Completes 8 moves.
-startTime = time.time()
+print()
+# Completes 8 moves.                                                                                                                                                                 
 testInformedSearch(makeState(4, 1, 3, 7, 2, 6, 5, 8, ""), makeGoalBoard(3), 1000, heuristic)
-endTime = time.time()
-print(endTime-startTime)
-# Completes 9 moves.
-startTime = time.time()
+print()
+# Completes 9 moves.                                                                                                                                                                 
 testInformedSearch(makeState(1, 6, 2, 5, 3, "", 4, 7, 8), makeGoalBoard(3), 1000, heuristic)
-endTime = time.time()
-print(endTime-startTime)
-startTime = time.time()
-# Completes 11 moves.
-startTime = time.time()
+print()
+# Completes 11 moves.                                                                                                                                                                
 testInformedSearch(makeState(5, 1, 2, 6, 3, "", 4, 7, 8), makeGoalBoard(3), 1000, heuristic)
-endTime = time.time()
-print(endTime-startTime)
-# Completes 13 moves.
-startTime = time.time()
-testInformedSearch(makeState(4,3,6,8,7,1,"",5,2), makeGoalBoard(3), 1000, heuristic)
-endTime = time.time()
-print(endTime-startTime)
-
-
-
-
+print()

@@ -131,20 +131,13 @@ def generalSearch(queue, limit, numRuns, goal):
         generalSearch(expandProcedure(queue[0], queue[1:len(queue)], explored), limit, numRuns, goal)
 
 # Calculates the Manhattan distance as a cost for each tile.
-def distHeuristic(board):
-    d = 0
-    correctVal = 1
-    realVal = 0
+def numOutOfOrder(board, goalBoard):
+    count = 0
     for x in range(len(board)):
         for y in range(len(board)):
-            if(board[x][y] == ""):
-                realVal = len(board) * len(board)
-            else:
-                realVal = board[x][y]
-            d += abs(correctVal-realVal)
-            correctVal += 1
-    return(int(3*d))
-
+            if board[x][y] != goalBoard[x][y] and board[x][y] != "":
+                count += 1
+    return count
 
 
 '''
@@ -275,8 +268,6 @@ def easyAStar(queue, limit, numRuns, heuristic, goalBoard):
         successors = expandProcedure(currentNode[1], [], exploredNodes)
 
         for successor in successors:
-            numRuns += 1
-            limit -= 1
 
             if testProcedure(successor[0], goalBoard):
                 print("OUTPUT: ")
@@ -285,7 +276,7 @@ def easyAStar(queue, limit, numRuns, heuristic, goalBoard):
             elif limit == 0:
                 print("LIMIT REACHED")
                 return
-            priority = successor[3] + heuristic(successor[0], goalBoard)
+            priority = successor[3] + max(heuristic(successor[0], goalBoard), numOutOfOrder(successor[0], goalBoard))
 
             addedNode = True
 
@@ -304,6 +295,8 @@ def easyAStar(queue, limit, numRuns, heuristic, goalBoard):
 
             if addedNode:
                 frontier.append((priority, successor))
+                numRuns += 1
+                limit -= 1
         exploredNodes.append(currentNode)
 
 
@@ -325,18 +318,42 @@ startNode = makeNode(start, None, 1, 0)
 #testUninformedSearch(randomBoard(makeGoalBoard(3)), makeGoalBoard(3), 1000)
 
 # Completes 2 moves.
+startTime = time.time()
 testInformedSearch(makeState(1, 2, 3, 4, "", 5, 7, 8, 6), makeGoalBoard(3), 1000, heuristic)
+endTime = time.time()
+print(endTime-startTime)
 # Completes 4 moves.
+startTime = time.time()
 testInformedSearch(makeState(1, 2, 3, 7, 4, 5, "", 8, 6), makeGoalBoard(3), 1000, heuristic)
+endTime = time.time()
+print(endTime-startTime)
 # Completes 5 moves.
+startTime = time.time()
 testInformedSearch(makeState(1, 2, 3, 4, 8, "", 7, 6, 5), makeGoalBoard(3), 1000, heuristic)
+endTime = time.time()
+print(endTime-startTime)
 # Completes 8 moves.
+startTime = time.time()
 testInformedSearch(makeState(4, 1, 3, 7, 2, 6, 5, 8, ""), makeGoalBoard(3), 1000, heuristic)
+endTime = time.time()
+print(endTime-startTime)
 # Completes 9 moves.
+startTime = time.time()
 testInformedSearch(makeState(1, 6, 2, 5, 3, "", 4, 7, 8), makeGoalBoard(3), 1000, heuristic)
+endTime = time.time()
+print(endTime-startTime)
+startTime = time.time()
 # Completes 11 moves.
+startTime = time.time()
 testInformedSearch(makeState(5, 1, 2, 6, 3, "", 4, 7, 8), makeGoalBoard(3), 1000, heuristic)
+endTime = time.time()
+print(endTime-startTime)
 # Completes 13 moves.
+startTime = time.time()
 testInformedSearch(makeState(4,3,6,8,7,1,"",5,2), makeGoalBoard(3), 1000, heuristic)
+endTime = time.time()
+print(endTime-startTime)
+
+
 
 
